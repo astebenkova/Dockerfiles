@@ -1,0 +1,12 @@
+version: "2.4"
+services:
+  aptly:
+    build: ./createrepo/
+    image: rpmrepo:latest
+    container_name: rpmrepo
+    hostname: rpmrepo
+    restart: unless-stopped
+    volumes:
+      - "/var/www/packages:/data/centos/packages"
+    ports:
+      - "6667:80"
