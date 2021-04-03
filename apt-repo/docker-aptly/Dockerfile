@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM ubuntu:focal
+FROM ubuntu:groovy-20210325
 
 MAINTAINER bryan@turbojets.net
 
