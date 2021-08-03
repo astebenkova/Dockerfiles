@@ -1,8 +1,7 @@
 version: "2.4"
 services:
   aptly:
-    build: ./docker-aptly/ 
-    image: aptly:latest
+    image: bryanhong/aptly:latest
     container_name: aptly
     hostname: aptly
     restart: unless-stopped
@@ -17,3 +16,15 @@ services:
       - HOSTNAME=apt.example.com
     ports:
       - "6666:80"
+
+# Make files available for downloading with wget
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    hostname: nginx
+    restart: unless-stopped
+    volumes:
+    - "./nginx.conf:/etc/nginx/conf.d/default.conf"
+    - "/opt/apt/packages/:/var/www/packages"
+    ports:
+    - "6668:80"
