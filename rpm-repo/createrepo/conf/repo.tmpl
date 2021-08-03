@@ -1,0 +1,9 @@
+%no-protection
+Key-Type: 1
+Key-Length: 2048
+Subkey-Type: 1
+Subkey-Length: 2048
+Name-Real: {{ .Env.GPG_NAME }}
+Name-Comment: {{ .Env.GPG_COMMENT }}
+Name-Email: {{ .Env.GPG_EMAIL }}
+Expire-Date: {{ .Env.GPG_EXPIRE }}
