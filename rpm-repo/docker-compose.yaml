@@ -9,11 +9,7 @@ services:
     volumes:
       - "/opt/rpm/gpg:/root/.gnupg"
       - "/var/www/packages:/data/centos/packages"
-    environment:
-      - GPG_NAME="Dude"
-      - GPG_COMMENT="Key for signing rpm packages"
-      - GPG_EMAIL=dude@example.com
-      - GPG_EXPIRE=0
-      - GPG_PASS=ChangeMePlease
+    env_file:
+      - rpmrepo.env
     ports:
-      - "6667:80"
+      - "80:80"
