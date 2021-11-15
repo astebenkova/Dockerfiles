@@ -1,0 +1,22 @@
+---
+version: "3.8"
+services:
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.0.1
+    hostname: exporter
+    container_name: node_exporter
+    command:
+      - "--path.rootfs=/host"
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - "/:/host:ro,rslave"
+
+  blackbox_exporter:
+    image: prom/blackbox-exporter:master
+    hostname: blackbox
+    container_name: blackbox_exporter
+    restart: unless-stopped
+    ports:
+      - "9115:9115"
