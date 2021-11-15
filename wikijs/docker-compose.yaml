@@ -24,6 +24,7 @@ services:
     restart: unless-stopped
     environment:
       - NGINX_DOMAIN_NAME=example.domain.com
+      - NGINX_PROXY_URL=http://wikijs:3000/
     volumes:
       - "/opt/nginx/ssl:/etc/ssl"
     ports:
