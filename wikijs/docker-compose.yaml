@@ -1,0 +1,31 @@
+version: "2.4"
+services:
+  wiki-db:
+    image: postgres:11-alpine
+    env_file: 
+      - "psql_secrets.env"
+    restart: unless-stopped
+    volumes:
+      - /opt/wikijs/data:/var/lib/postgresql/data
+
+  wikijs:
+    image: requarks/wiki:2
+    depends_on:
+      - wiki-db
+    env_file: 
+      - "wikijs_secrets.env"
+    restart: unless-stopped
+
+  nginx:
+    build: ./nginx
+    image: nginx:alpine
+    container_name: nginx
+    hostname: nginx
+    restart: unless-stopped
+    environment:
+      - NGINX_DOMAIN_NAME=example.domain.com
+    volumes:
+      - "/opt/nginx/ssl:/etc/ssl"
+    ports:
+      - "443:443"
+      - "80:80"
