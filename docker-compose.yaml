@@ -1,0 +1,95 @@
+version: "2.4"
+services:
+  wiki-db:
+    image: postgres:11-alpine
+    restart: unless-stopped
+    env_file: 
+      - "./wikijs/psql_secrets.env"
+    volumes:
+      - "/opt/wikijs/data:/var/lib/postgresql/data"
+
+  wikijs:
+    image: requarks/wiki:2
+    depends_on:
+      - wiki-db
+    env_file: 
+      - "./wikijs/wikijs_secrets.env"
+    restart: unless-stopped
+
+  cvetool-web:
+    image: airship.svc.mirantis.net/cvetool-web:latest
+    container_name: cvetool-web
+    hostname: cvetool-web
+    restart: unless-stopped
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/opt/cvetool-web/nvd.db:/etc/cvetool/nvd.db"
+
+  aptly:
+    image: bryanhong/aptly:latest
+    container_name: aptly
+    hostname: aptly
+    restart: unless-stopped
+    env_file:
+      - "./apt-repo/aptrepo.env"
+    volumes:
+      - "/opt/apt/gpg:/root/.gnupg"
+      - "/opt/apt/aptly:/opt/aptly"
+      - "/opt/apt/packages:/opt/packages"
+
+  rpmrepo:
+    build: 
+      context: ./rpm-repo/createrepo
+    container_name: rpmrepo
+    hostname: rpmrepo
+    restart: unless-stopped
+    env_file:
+      - "./rpm-repo/rpmrepo.env"
+    volumes:
+      - "/opt/rpm-repo/packages:/data/centos/packages"
+
+  registry:
+    image: registry:2
+    container_name: registry
+    hostname: registry
+    restart: unless-stopped
+    volumes:
+      - "/opt/registry/data:/var/lib/registry"
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.0.1
+    hostname: exporter
+    container_name: node_exporter
+    command:
+      - "--path.rootfs=/host"
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - "/:/host:ro,rslave"
+
+  blackbox_exporter:
+    image: prom/blackbox-exporter:master
+    hostname: blackbox
+    container_name: blackbox_exporter
+    restart: unless-stopped
+    ports:
+      - "9115:9115"
+    volumes:
+      - "./prometheus/blackbox_exporter/config.yml:/etc/blackbox_exporter/config.yml"
+
+  nginx:
+    build: ./nginx
+    image: nginx:alpine
+    container_name: nginx
+    hostname: nginx
+    restart: unless-stopped
+    volumes:
+      - "/opt/nginx/ssl:/etc/ssl"
+      - "/opt/registry/auth:/etc/nginx/registry"
+      - "/opt/apt/packages:/var/www/packages"
+    environment:
+      - NGINX_DOMAIN_NAME=example.domain.com
+    ports:
+      - "443:443"
+      - "80:80"
