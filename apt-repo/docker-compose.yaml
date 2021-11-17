@@ -9,11 +9,8 @@ services:
       - "/opt/apt/gpg:/root/.gnupg"
       - "/opt/apt/aptly:/opt/aptly"
       - "/opt/apt/packages:/opt/packages"
-    environment:
-      - FULL_NAME="APT Repository"
-      - EMAIL_ADDRESS=dude@example.com
-      - GPG_PASSWORD=ChangeMePlease
-      - HOSTNAME=apt.example.com
+    env_file:
+      - aptrepo.env
     ports:
       - "6666:80"
 
